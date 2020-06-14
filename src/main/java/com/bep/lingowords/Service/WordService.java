@@ -55,7 +55,7 @@ public class WordService {
     public void saveFilteredWords(List<Word> wordList) {
         List<String> wordNamesInDb = new ArrayList<>();
         //get all words in db
-        var allWords = wordRepository.findAll();
+        List<Word> allWords = wordRepository.findAll();
 
         // Check if there are words in db
         if (allWords.size() > 0) {
