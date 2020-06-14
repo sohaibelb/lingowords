@@ -1,6 +1,8 @@
 # lingowords
 
-[![codecov](https://codecov.io/gh/sohaibelb/lingowords/branch/master/graph/badge.svg?token=OJK4S85NQX)](https://codecov.io/gh/sohaibelb/lingowords)
+# SonarCloud 
+
+[![Sonarcloud Status](https://sonarcloud.io/api/project_badges/measure?project=sohaibelb_lingogame&metric=alert_status)](https://sonarcloud.io/dashboard?id=sohaibelb_lingogame)
 
 
 
