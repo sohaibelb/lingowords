@@ -4,6 +4,6 @@ sudo: false # faster builds
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   
-  env:
+env:
   global:
-    - CODECOV_TOKEN=:OJK4S85NQX
+    - CODECOV_TOKEN=:uuid-repo-token
