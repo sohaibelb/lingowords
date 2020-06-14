@@ -1,4 +1,5 @@
 codecov:
+  token: 96d63e47-404e-4cf2-a273-a350df2a3b5b
   require_ci_to_pass: yes
 
 coverage:
@@ -18,3 +19,5 @@ comment:
   layout: "reach,diff,flags,tree"
   behavior: default
   require_changes: no
+  
+  cat codecov.yml | curl --data-binary @- https://codecov.io/validate
