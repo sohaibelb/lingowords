@@ -1,4 +1,6 @@
 language: java
+jdk:
+  - oraclejdk13
 script: mvn clean verify
 before_install:
   - chmod +x mvnw 
