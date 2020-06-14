@@ -1,1 +1,12 @@
+language: java
+jdk:
+  - oraclejdk13
+script: mvn clean verify
+before_install:
+  - chmod +x mvnw 
+  
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
+env:
+    - CODECOV_TOKEN="96d63e47-404e-4cf2-a273-a350df2a3b5b"
