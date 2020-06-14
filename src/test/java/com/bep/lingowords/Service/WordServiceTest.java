@@ -4,14 +4,20 @@ import com.bep.lingowords.Model.Word;
 import com.bep.lingowords.Repository.WordRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -34,8 +40,6 @@ class WordServiceTest {
         when(mockWordRepository.save(new Word(0, "name"))).thenReturn(new Word(0, "name"));
 
         wordServiceUnderTest.getFilteredWords("basiswoorden-gekeurd.txt");
-
-        // Verify the results
     }
 
     @Test
@@ -46,79 +50,56 @@ class WordServiceTest {
 
         // Run the test
         assertThrows(IOException.class, () -> {
-            wordServiceUnderTest.getFilteredWords("basiswoorden-gekeurd.txt");
+            wordServiceUnderTest.getFilteredWords("file");
         });
     }
 
     @Test
     void testGetAllWords() throws Exception {
-        // Setup
-        final List<String> expectedResult = Arrays.asList("value");
+        final List<String> expectedResult = Arrays.asList("06");
 
-        // Run the test
-        final List<String> result = wordServiceUnderTest.getAllWords("source");
+        final List<String> result = wordServiceUnderTest.getAllWords("basiswoorden-gekeurd.txt");
 
-        // Verify the results
-        assertEquals(expectedResult, result);
+        assertEquals(expectedResult.get(0), result.get(0));
     }
 
-    @Test
-    void testGetAllWords_ThrowsIOException() {
-        // Setup
+    //Setting up for the filter function below
+    public static Stream<Arguments> validArgs() {
+        return Stream.of(
+                //A list and none of the words match the regex
+                Arguments.of(new ArrayList<>(Arrays.asList("tËM-r", "bek", "BEDDEN", "eensuperlangewoord", "!HeelVEeel.")),
+                        new ArrayList<>(Arrays.asList())),   //should return an empty list
 
-        // Run the test
-        assertThrows(IOException.class, () -> {
-            wordServiceUnderTest.getAllWords("source");
-        });
+                //A list and all words match the regex
+                Arguments.of(new ArrayList<>(Arrays.asList("baard", "schrift")),
+                        new ArrayList<>(Arrays.asList(      //should return a full word list
+                                new Word(null, "baard"),
+                                new Word(null, "schrift")))),
+
+                //A list with words that doesnt match the regex
+                Arguments.of(new ArrayList<>(Arrays.asList("tËM-r", "baard", "schrift")),
+                        new ArrayList<>(Arrays.asList(  //should return a list with only the correct words
+                                new Word(null, "baard"),
+                                new Word(null, "schrift"))))
+        );
     }
 
-    @Test
-    void testFilterWords() throws Exception {
-        // Setup
-        final List<String> wordList = Arrays.asList("value");
-        final List<Word> expectedResult = Arrays.asList(new Word(0, "name"));
-        when(mockWordRepository.findAll()).thenReturn(Arrays.asList(new Word(0, "name")));
+    //Testing if the filter function return a word list with the words that doest match the regex
+    @ParameterizedTest
+    @MethodSource({"validArgs"})
+    public void testFilterWords(List<String> testStringList, List<Word> expectedWordList) {
+        final List<Word> actualResult = wordServiceUnderTest.filterWords(testStringList);
 
-        // Run the test
-        final List<Word> result = wordServiceUnderTest.filterWords(wordList);
-
-        // Verify the results
-        assertEquals(expectedResult, result);
-    }
-
-    @Test
-    void testFilterWords_ThrowsIOException() {
-        // Setup
-        final List<String> wordList = Arrays.asList("value");
-        when(mockWordRepository.findAll()).thenReturn(Arrays.asList(new Word(0, "name")));
-
-        // Run the test
-        assertThrows(IOException.class, () -> {
-            wordServiceUnderTest.filterWords(wordList);
-        });
+        assertEquals(actualResult, expectedWordList);
     }
 
     @Test
     void testSaveFilteredWords() {
-        // Setup
         final List<Word> wordList = Arrays.asList(new Word(0, "name"));
+        when(mockWordRepository.findAll()).thenReturn(Arrays.asList(new Word(0, "name")));
         when(mockWordRepository.save(new Word(0, "name"))).thenReturn(new Word(0, "name"));
 
-        // Run the test
         wordServiceUnderTest.saveFilteredWords(wordList);
-
-        // Verify the results
     }
 
-    @Test
-    void testCheckIfWordExist() {
-        // Setup
-        when(mockWordRepository.findAll()).thenReturn(Arrays.asList(new Word(0, "name")));
-
-        // Run the test
-        final boolean result = wordServiceUnderTest.checkIfWordExist("word");
-
-        // Verify the results
-        assertTrue(result);
-    }
 }

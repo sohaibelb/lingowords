@@ -24,9 +24,9 @@ public class WordService {
     }
 
     //Get the all words of the file
-    public List<String> getAllWords(String source) throws IOException {
+    public List<String> getAllWords(String file) throws IOException {
         List<String> wordList = new ArrayList<>();
-        FileReader fr = new FileReader("src/main/resources/" + source);
+        FileReader fr = new FileReader("src/main/resources/" + file);
         BufferedReader br = new BufferedReader(fr);
 
         String lineWord = br.readLine();
@@ -39,10 +39,11 @@ public class WordService {
     }
 
     //Filter the words of the file
-    public List<Word> filterWords(List<String> wordList) throws IOException {
+    public List<Word> filterWords(List<String> wordList) {
         List<Word> filteredWords = new ArrayList<>();
+
         for (String word : wordList) {
-            if (word.matches("^[a-z]{5,7}$") && !checkIfWordExist(word)) {
+            if (word.matches("^[a-z]{5,7}$") && filteredWords.size() < 1000) {
                 Word filteredWord = new Word(null, word);
                 filteredWords.add(filteredWord);
             }
@@ -50,26 +51,27 @@ public class WordService {
         return filteredWords;
     }
 
-    //Save the words in database
+ //Save the words in database
     public void saveFilteredWords(List<Word> wordList) {
-        for (Word word : wordList) {
-            wordRepository.save(word);
-        }
-    }
-
-    //Check if the given words already exists in the database
-    public boolean checkIfWordExist(String word) {
-        List<Word> wordsInDb = wordRepository.findAll();
         List<String> wordNamesInDb = new ArrayList<>();
-        for (Word wordOfDb : wordsInDb) {
-            wordNamesInDb.add(wordOfDb.getName());
+        //get all words in db
+        var allWords = wordRepository.findAll();
+
+        // Check if there are words in db
+        if (allWords.size() > 0) {
+            for (Word wordInDb : allWords) {
+                wordNamesInDb.add(wordInDb.getName());
+            }
         }
 
-        if (wordNamesInDb.contains(word)) {
-            return true;
-        } else {
-            return false;
+        // If there are less than 1000 words in db, then save the new words in db. This is because of the heroku limits.
+        if (allWords.size() < 1000) {
+            for (Word word : wordList) {
+                //Check if the given words already exists in the database
+                if (!wordNamesInDb.contains(word.getName())) {
+                    wordRepository.save(word);
+                }
+            }
         }
-
     }
 }
