@@ -18,6 +18,10 @@
         <java.version>11</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <sonar.projectKey>sohaibelb_lingowords</sonar.projectKey>
+        <sonar.organization>sohaibelb</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.login>042a2f3f65650818d2cab7338051df8426cc743e</sonar.login>
     </properties>
 
     <dependencies>
