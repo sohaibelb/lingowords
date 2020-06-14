@@ -1,8 +1,12 @@
 language: java
+jdk:
+  - oraclejdk11
+script: mvn clean verify
+before_install:
+  - chmod +x mvnw 
+  
 after_success:
   - bash <(curl -s https://codecov.io/bash)
-before_install:
-  - chmod +x mvnw
 
 env:
   global:
